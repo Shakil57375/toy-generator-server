@@ -33,6 +33,24 @@ async function run() {
       res.send(result)
     })
 
+    app.get("/toys", async(req, res)=>{
+      const result = await toysCollection.find().toArray()
+      res.send(result)
+    })
+
+    
+    app.get("/toys/:category", async(req, res)=>{
+      console.log(req.params.category)
+      if(req.params.category == "cricket" || req.params.category == "football" || req.params.category == "badminton"){
+        const result = await toysCollection.find({
+          category : req.params.category
+        }).toArray()
+        return res.send(result)
+      }
+      const result = await toysCollection.find().toArray()
+      res.send(result)
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
