@@ -27,6 +27,19 @@ async function run() {
 
     const toysCollection = client.db("toysDb").collection("toys")
 
+    const indexKeys = { title: 1, category: 1 }
+    const indexOptions = { name: "titleCategory" }
+
+    app.get("/toySearchByToyName/:toyName", async (req, res) => {
+      const searchName = req.params.toyName
+      const result = await toysCollection.find({
+        $or: [
+          { ToyName: { $regex: searchName, $options: "i" } },
+        ],
+      }).toArray()
+      res.send(result)
+    })
+
     app.post("/toys", async (req, res) => {
       const body = req.body
       const result = await toysCollection.insertOne(body)
@@ -61,7 +74,7 @@ async function run() {
       console.log(req.params.email)
       if (req.params?.email) {
         const result = await toysCollection.find({
-          sellerEmail : req.params.email
+          sellerEmail: req.params.email
         }).toArray()
         return res.send(result)
       }
@@ -69,22 +82,22 @@ async function run() {
       res.send(result)
     })
 
-    app.delete("/SingleToys/:id", async(req, res)=>{
+    app.delete("/SingleToys/:id", async (req, res) => {
       const id = req.params.id
-      const filter = {_id : new ObjectId(id)}
+      const filter = { _id: new ObjectId(id) }
       const result = await toysCollection.deleteOne(filter)
       res.send(result)
     })
 
-    app.put("/updateToys/:id", async(req, res)=>{
+    app.put("/updateToys/:id", async (req, res) => {
       const id = req.params.id
       const body = req.body
-      const filter = {_id : new ObjectId(id)}
+      const filter = { _id: new ObjectId(id) }
       const updatedProduct = {
-        $set:{
-          price : body.price,
-          quantity : body.quantity,
-          description : body.description
+        $set: {
+          price: body.price,
+          quantity: body.quantity,
+          description: body.description
         }
       }
       const result = await toysCollection.updateOne(filter, updatedProduct)
