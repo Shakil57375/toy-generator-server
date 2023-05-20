@@ -26,30 +26,42 @@ async function run() {
     await client.connect();
 
     const toysCollection = client.db("toysDb").collection("toys")
-    
-    app.post("/toys", async(req, res)=>{
+
+    app.post("/toys", async (req, res) => {
       const body = req.body
       const result = await toysCollection.insertOne(body)
       res.send(result)
     })
 
-    app.get("/toys", async(req, res)=>{
+    app.get("/toys", async (req, res) => {
       const result = await toysCollection.find().toArray()
       res.send(result)
     })
 
-    app.get("/SingleToys/:id", async(req, res)=>{
+    app.get("/SingleToys/:id", async (req, res) => {
       const id = req.params.id
-      const query = {_id : new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await toysCollection.findOne(query)
       res.send(result)
     })
-    
-    app.get("/toys/:category", async(req, res)=>{
+
+    app.get("/toys/:category", async (req, res) => {
       console.log(req.params.category)
-      if(req.params.category == "cricket" || req.params.category == "football" || req.params.category == "badminton"){
+      if (req.params.category == "cricket" || req.params.category == "football" || req.params.category == "badminton") {
         const result = await toysCollection.find({
-          category : req.params.category
+          category: req.params.category
+        }).toArray()
+        return res.send(result)
+      }
+      const result = await toysCollection.find().toArray()
+      res.send(result)
+    })
+
+    app.get("/myToys/:email", async (req, res) => {
+      console.log(req.params.email)
+      if (req.params?.email) {
+        const result = await toysCollection.find({
+          sellerEmail : req.params.email
         }).toArray()
         return res.send(result)
       }
@@ -68,10 +80,10 @@ async function run() {
 run().catch(console.dir);
 
 
-app.get("/", (req, res)=>{
-    res.send("Toy store is running")
+app.get("/", (req, res) => {
+  res.send("Toy store is running")
 })
 
-app.listen(port, ()=>{
-    console.log(`Toy store is running on port ${port}`);
+app.listen(port, () => {
+  console.log(`Toy store is running on port ${port}`);
 })
