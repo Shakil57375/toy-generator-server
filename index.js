@@ -47,7 +47,7 @@ async function run() {
     })
 
     app.get("/toys", async (req, res) => {
-      const result = await toysCollection.find().toArray()
+      const result = await toysCollection.find().limit(20).toArray()
       res.send(result)
     })
 
@@ -72,15 +72,19 @@ async function run() {
 
     app.get("/myToys/:email", async (req, res) => {
       console.log(req.params.email)
+      const {query} = req.params
       if (req.params?.email) {
-        const result = await toysCollection.find({
-          sellerEmail: req.params.email
-        }).toArray()
+        const result = await toysCollection
+        .find({sellerEmail: req.params.email})
+        .toArray()
         return res.send(result)
       }
       const result = await toysCollection.find().toArray()
       res.send(result)
     })
+
+    
+    
 
     app.delete("/SingleToys/:id", async (req, res) => {
       const id = req.params.id
