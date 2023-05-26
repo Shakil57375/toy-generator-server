@@ -29,7 +29,7 @@ async function run() {
 
     const indexKeys = { title: 1, category: 1 }
     const indexOptions = { name: "titleCategory" }
-
+    // get data from server
     app.get("/toySearchByToyName/:toyName", async (req, res) => {
       const searchName = req.params.toyName
       const result = await toysCollection.find({
@@ -39,25 +39,25 @@ async function run() {
       }).toArray()
       res.send(result)
     })
-
+    // set data to server
     app.post("/toys", async (req, res) => {
       const body = req.body
       const result = await toysCollection.insertOne(body)
       res.send(result)
     })
-
+    // get data from server
     app.get("/toys", async (req, res) => {
       const result = await toysCollection.find().limit(20).toArray()
       res.send(result)
     })
-
+    // get specific data from server
     app.get("/SingleToys/:id", async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await toysCollection.findOne(query)
       res.send(result)
     })
-
+    // filter by category
     app.get("/toys/:category", async (req, res) => {
       console.log(req.params.category)
       if (req.params.category == "cricket" || req.params.category == "football" || req.params.category == "badminton") {
@@ -69,7 +69,7 @@ async function run() {
       const result = await toysCollection.find().toArray()
       res.send(result)
     })
-
+    // get the toys for the exact person
     app.get("/myToys/:email", async (req, res) => {
       console.log(req.params.email)
       const {query} = req.params
@@ -83,16 +83,7 @@ async function run() {
       res.send(result)
     })
 
-    
-    
-
-    app.delete("/SingleToys/:id", async (req, res) => {
-      const id = req.params.id
-      const filter = { _id: new ObjectId(id) }
-      const result = await toysCollection.deleteOne(filter)
-      res.send(result)
-    })
-
+    // update data
     app.put("/updateToys/:id", async (req, res) => {
       const id = req.params.id
       const body = req.body
@@ -107,6 +98,16 @@ async function run() {
       const result = await toysCollection.updateOne(filter, updatedProduct)
       res.send(result)
     })
+    
+    // delete data 
+
+    app.delete("/SingleToys/:id", async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const result = await toysCollection.deleteOne(filter)
+      res.send(result)
+    })
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
